@@ -13,6 +13,7 @@
         android:layout_marginStart="153dp"
         android:layout_marginTop="200dp"
         android:layout_marginEnd="141dp"
+        android:fontFamily="@font/poppins"
         android:text="Daily Meme Digest"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
