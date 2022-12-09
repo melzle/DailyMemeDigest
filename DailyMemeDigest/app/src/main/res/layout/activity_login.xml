@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnCreateAcc_LoginActivity"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="293dp"
         android:layout_height="64dp"
@@ -79,12 +79,12 @@
         app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnSignIn_LoginActivity"
         android:layout_width="296dp"
         android:layout_height="62dp"
         android:layout_marginTop="16dp"
-        android:text="Sing in"
+        android:text="sign in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/btnCreateAcc_LoginActivity" />
 </androidx.constraintlayout.widget.ConstraintLayout>
