@@ -50,7 +50,9 @@ class LoginActivity : AppCompatActivity() {
 
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
-                    } },
+                    } else {
+                        Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                    }},
                 Response.ErrorListener {
                     Log.d("cekparams", it.message.toString())
                 }
