@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer_layout)
-        getHomeMemes()
+
 //        Thread.sleep(1000)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -71,6 +71,8 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
         user = getUser(userStr.toString())
+        getHomeMemes()
+        getUserMemes(user.id)
 
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
@@ -255,7 +257,50 @@ class MainActivity : AppCompatActivity() {
             }
         }
         q.add(stringRequest)
-
-
     }
+
+    private fun getUserMemes(id: Int) {
+        Global.homeMemes.clear()
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/get_user_memes.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val data = obj.getJSONArray("data")
+                    Log.d("datalen", data.length().toString())
+                    for(i in 0 until data.length()) {
+                        val memeObj = data.getJSONObject(i)
+                        val meme = Meme(
+                            memeObj.getInt("id"),
+                            memeObj.getString("imageurl"),
+                            memeObj.getString("toptext"),
+                            memeObj.getString("bottomtext"),
+                            memeObj.getInt("numoflikes"),
+                            memeObj.getInt("users_id"),
+                            0
+                        )
+                        Log.d("objparams", memeObj.getString("toptext"))
+                        Global.userMemes.add(meme)
+                    }
+//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
+                } else {
+//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["userid"] = id.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
+    }
+
 }

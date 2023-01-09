@@ -1,9 +1,8 @@
 package com.sukacita.dailymemedigest
 
 object Global {
-    var homeMemes: ArrayList<Meme> = arrayListOf(
-//        Meme(0, "", "", "", 0,0,0)
-    )
+    var homeMemes: ArrayList<Meme> = arrayListOf()
+    var userMemes: ArrayList<Meme> = arrayListOf()
 
     var leaderboardArr: ArrayList<Leaderboard> = ArrayList()
 
