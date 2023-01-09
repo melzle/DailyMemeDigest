@@ -30,6 +30,9 @@ import com.google.android.material.navigation.NavigationView
 import com.squareup.picasso.Picasso
 import jp.wasabeef.glide.transformations.BlurTransformation
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_UPDATE = 1
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer_layout)
         getHomeMemes()
+//        Thread.sleep(1000)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Daily Meme Digest"
@@ -123,6 +127,9 @@ class MainActivity : AppCompatActivity() {
 
         if (user.avatarUrl != "") {
             Glide.with(this).load(user.avatarUrl).into(imgProfilePic)
+        } else {
+            val defaultPfp = "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg"
+            Glide.with(this).load(defaultPfp).into(imgProfilePic)
         }
 
 //        val homeFragment = HomeFragment()
@@ -208,6 +215,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getHomeMemes() {
+        Global.homeMemes.clear()
         val q = Volley.newRequestQueue(this)
         val url = "https://scheday.site/nmp/get_home_memes.php"
 
@@ -228,7 +236,7 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            memeObj.getInt("reportcount")
+                            0
                         )
                         Log.d("objparams", memeObj.getString("toptext"))
                         Global.homeMemes.add(meme)

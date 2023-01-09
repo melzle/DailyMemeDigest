@@ -37,6 +37,7 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
 //            meme = it.getParcelable(ARG_MEME)
+
         }
     }
 
@@ -53,11 +54,12 @@ class HomeFragment : Fragment() {
                 activity?.startActivity(intent)
             }
 
-            memes = getHomeMemes()
             val lm: LinearLayoutManager = LinearLayoutManager(activity)
             val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
             recycler.layoutManager = lm
             recycler.setHasFixedSize(true)
+//            Log.d("CEK_DI_FRAGMENT", getHomeMemes().toString())
+//            Thread.sleep(1000)
             recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes)
         }
 

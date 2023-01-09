@@ -16,6 +16,10 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): RecyclerView.Adapter<HomeMemeAdapter.HomeMemeViewHolder>() {
     class HomeMemeViewHolder(val v: View): RecyclerView.ViewHolder(v)
@@ -29,16 +33,23 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
     }
 
     override fun onBindViewHolder(holder: HomeMemeViewHolder, position: Int) {
-        with(homeMemes[position]){
-//            val time = time
-//            val customers = nCustomers
-//            holder.v.txtTimeCustomer.text = "0$time.00 - $customers"
-            val img: ImageView = holder.v.findViewById(R.id.imgMeme)
-            holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = toptext
-            holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = bottomtext
-
+//        with(homeMemes[position]){
+////            val time = time
+////            val customers = nCustomers
+////            holder.v.txtTimeCustomer.text = "0$time.00 - $customers"
+//            val img: ImageView = holder.v.findViewById(R.id.imgMeme)
+//            holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = toptext
+//            holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = bottomtext
+//
 //            Picasso.get().load(imageurl).into(img)
-        }
+//        }
+//        Log.d("cek", homeMemes.toString())
+        val img: ImageView = holder.v.findViewById(R.id.imgMeme)
+        holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = homeMemes[position].toptext
+        holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
+//        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = getDateTime(homeMemes[position].)
+
+        Picasso.get().load(homeMemes[position].imageurl).into(img)
     }
 
     override fun getItemCount(): Int {
@@ -86,4 +97,6 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
         }
         q.add(stringRequest)
     }
+
+
 }

@@ -113,7 +113,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:shadowColor="#000000"
+                android:shadowRadius="5"
                 android:text="TextView"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgMeme" />
@@ -123,7 +127,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:shadowColor="#000000"
+                android:shadowRadius="5"
                 android:text="TextView"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgMeme"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

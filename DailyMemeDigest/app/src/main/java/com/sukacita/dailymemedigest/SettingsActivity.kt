@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import androidx.annotation.RequiresApi
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -15,6 +17,12 @@ import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.HashMap
 
 class SettingsActivity : AppCompatActivity() {
     companion object {
@@ -22,6 +30,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -45,12 +54,13 @@ class SettingsActivity : AppCompatActivity() {
         if (user.avatarUrl != "") {
             Glide.with(this).load(user.avatarUrl).into(imgProfile)
         } else {
-            val defaultUrl = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
-            Glide.with(this).load(defaultUrl).into(imgProfile)
+            val defaultPfp = "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg"
+            Glide.with(this).load(defaultPfp).into(imgProfile)
         }
 
+        val date = getDate(user.regisDate).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
         txtName.text = "${user.firstname} ${user.lastname}"
-        txtDate.text = "Active since ${user.regisDate}"
+        txtDate.text = "Active since ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
         txtUsername.text = user.username
 
         var fnHint = "Enter First Name"
@@ -186,5 +196,11 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         q.add(stringRequest)
+    }
+
+    fun getDate(s: String): Date {
+        val strArr = s.split(" ")
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        return sdf.parse(strArr[0])
     }
 }
