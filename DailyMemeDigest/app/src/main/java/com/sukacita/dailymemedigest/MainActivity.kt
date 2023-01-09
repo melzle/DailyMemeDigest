@@ -15,6 +15,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -76,10 +78,15 @@ class MainActivity : AppCompatActivity() {
         getHomeMemes()
         getUserMemes(user.id)
         getLeaderboard()
+        Thread.sleep(500)
 
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
         val navView: NavigationView = findViewById(R.id.navView)
+
+//        val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
+//        val re = viewPager.findfr
+
 
 //        updateMenuSelected(0, viewPager, navView)
 
@@ -148,6 +155,10 @@ class MainActivity : AppCompatActivity() {
         fabHeader.setOnClickListener() {
             logout(shared)
         }
+
+//        val frag = FragmentManager.findFragment<Fragment?>(fragments[0].requireActivity().)
+//        val re = frag.view?.findViewById<RecyclerView>(R.id.MemeRecyclerView_homefrag)
+//        re?.adapter?.notifyDataSetChanged()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -183,7 +194,8 @@ class MainActivity : AppCompatActivity() {
         var editor : SharedPreferences.Editor = shared.edit()
         editor.clear()
         editor.apply()
-
+        Global.homeMemes.clear()
+        Global.userMemes.clear()
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
@@ -242,7 +254,7 @@ class MainActivity : AppCompatActivity() {
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
-                    Log.d("apiresult", it)
+                    Log.d("INI_HOME_BUAT_GLOBAL", it)
                 val obj = JSONObject(it)
                 if(obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
@@ -258,10 +270,10 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getInt("users_id"),
                             0
                         )
-                        Log.d("objparams", memeObj.getString("toptext"))
+//                        Log.d("objparams", memeObj.getString("toptext"))
                         Global.homeMemes.add(meme)
                     }
-                    Log.d("globalmemelen", Global.homeMemes.size.toString())
+//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
                 } else {
                     Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
                 }},
@@ -278,7 +290,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserMemes(id: Int) {
-        Global.homeMemes.clear()
+        Global.userMemes.clear()
         val q = Volley.newRequestQueue(this)
         val url = "https://scheday.site/nmp/get_user_memes.php"
 

@@ -59,8 +59,9 @@ class HomeFragment : Fragment() {
             val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
             recycler.layoutManager = lm
             recycler.setHasFixedSize(true)
-//            Log.d("CEK_DI_FRAGMENT", getHomeMemes().toString())
+            Log.d("CEK_ISI_GLOBAL_DR_FRGMT", getHomeMemes().toString())
 //            Thread.sleep(1000)
+
             recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes)
 
         }
@@ -88,6 +89,7 @@ class HomeFragment : Fragment() {
 
     private fun getHomeMemes(): ArrayList<Meme> {
         var arrmeme: ArrayList<Meme> = arrayListOf()
+        var stat = 0
         val q = Volley.newRequestQueue(activity)
         val url = "https://scheday.site/nmp/get_home_memes.php"
 
@@ -107,10 +109,11 @@ class HomeFragment : Fragment() {
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            memeObj.getInt("reportcount")
+                            0
                         )
                         arrmeme.add(meme)
                     }
+                    stat = 1
 
                 } else {
 //                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
@@ -126,6 +129,10 @@ class HomeFragment : Fragment() {
         }
         q.add(stringRequest)
 
+//        var wait = 0
+//        while (stat != 1) {
+//            wait++
+//        }
         return arrmeme
     }
 }
