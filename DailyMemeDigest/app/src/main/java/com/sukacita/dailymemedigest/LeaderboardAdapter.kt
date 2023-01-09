@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 
 class LeaderboardAdapter(val context: Context): RecyclerView.Adapter<LeaderboardAdapter.LeaderboardViewHolder>() {
@@ -24,14 +25,30 @@ class LeaderboardAdapter(val context: Context): RecyclerView.Adapter<Leaderboard
             val txtName: TextView = holder.v.findViewById(R.id.txtName)
             val txtLikes: TextView = holder.v.findViewById(R.id.txtJumlahLike)
 
-            Picasso.get().load(this.avatarurl).into(imgProfile)
+            if (avatarurl != "".toString()) {
+                Picasso.get().load(avatarurl).into(imgProfile)
+            } else {
+                val defaultPfp = "https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg"
+                Picasso.get().load(defaultPfp).into(imgProfile)
+            }
 
-            var displayName = username
+            var dfn = firstname
+            var dln = lastname
+
+            if (firstname == "" || firstname == "null" || firstname.isNullOrBlank() || firstname.isNullOrEmpty()) {
+                dfn = "User"
+            }
+
+            if (lastname == "" || lastname == "null") {
+                dln = ""
+            }
+
+            var displayName = "$dfn $dln"
             if (privacysetting == 1) {
                 displayName = privateName(displayName)
             }
             txtName.text = displayName
-            txtLikes.text = likes.toString()
+            txtLikes.text = "${ likes.toString() } likes"
         }
     }
 

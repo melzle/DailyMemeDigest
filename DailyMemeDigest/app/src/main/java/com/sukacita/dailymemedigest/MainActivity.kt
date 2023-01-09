@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer_layout)
 
-//        Thread.sleep(1000)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Daily Meme Digest"
@@ -70,9 +69,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
         user = getUser(userStr.toString())
         getHomeMemes()
         getUserMemes(user.id)
+        getLeaderboard()
 
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
@@ -206,6 +207,10 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     private fun updateUser() {
         val sharedFile = "com.sukacita.dailymemedigest"
         var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
@@ -297,6 +302,46 @@ class MainActivity : AppCompatActivity() {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
                 params["userid"] = id.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
+    }
+
+    private fun getLeaderboard() {
+        Global.leaderboardArr.clear()
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/get_leaderboard.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val data = obj.getJSONArray("data")
+                    Log.d("datalen", data.length().toString())
+                    for(i in 0 until data.length()) {
+                        val leaderboardobj = data.getJSONObject(i)
+                        val lb = Leaderboard(
+                            leaderboardobj.getString("avatarurl"),
+                            leaderboardobj.getString("firstname"),
+                            leaderboardobj.getString("lastname"),
+                            leaderboardobj.getInt("sum"),
+                            leaderboardobj.getInt("privacysetting")
+                        )
+                        Global.leaderboardArr.add(lb)
+                    }
+//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
+                } else {
+//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
                 return params
             }
         }
