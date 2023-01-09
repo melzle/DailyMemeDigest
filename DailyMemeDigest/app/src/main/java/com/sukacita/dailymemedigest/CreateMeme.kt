@@ -1,5 +1,6 @@
 package com.sukacita.dailymemedigest
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.Image
@@ -54,6 +55,7 @@ class CreateMeme : AppCompatActivity() {
                     val obj = JSONObject(it)
                     if(obj.getString("result") == "OK") {
                         Toast.makeText(this, "Create meme success", Toast.LENGTH_SHORT).show()
+                        setResult(Activity.RESULT_OK)
                         finish()
                     } else {
                         Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()

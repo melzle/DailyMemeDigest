@@ -32,6 +32,7 @@ class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
 //    private var meme: Meme? = null
     private var memes: ArrayList<Meme> = arrayListOf()
+    val REQUEST_UPDATE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +52,7 @@ class HomeFragment : Fragment() {
 
             fab.setOnClickListener() {
                 val intent = Intent(activity, CreateMeme::class.java)
-                activity?.startActivity(intent)
+                activity?.startActivityForResult(intent, REQUEST_UPDATE)
             }
 
             val lm: LinearLayoutManager = LinearLayoutManager(activity)
