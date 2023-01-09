@@ -99,6 +99,7 @@ class SettingsActivity : AppCompatActivity() {
 
                             Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
                             updateUser(shared, user.username)
+
                             setResult(Activity.RESULT_OK)
                             finish()
                         } else {
@@ -181,7 +182,15 @@ class SettingsActivity : AppCompatActivity() {
                     editor.clear()
                     editor.putString("user", it)
                     editor.apply()
-                    Toast.makeText(this, "done", Toast.LENGTH_SHORT).show()
+
+                    val obj = JSONObject(it)
+                    val data = obj.getJSONArray("data")
+                    val userObj = data.getJSONObject(0)
+                    Global.currentUser.firstname = userObj.getString("firstname")
+                    Global.currentUser.lastname = userObj.getString("lastname")
+
+//                    Global.currentUser.firstname = ??
+//                    Toast.makeText(this, "done", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
                 }},

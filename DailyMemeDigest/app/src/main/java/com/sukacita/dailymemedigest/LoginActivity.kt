@@ -45,6 +45,8 @@ class LoginActivity : AppCompatActivity() {
                     val obj = JSONObject(it)
                     if(obj.getString("result") == "OK") {
                         var editor : SharedPreferences.Editor = shared.edit()
+                        editor.clear()
+                        editor.apply()
                         editor.putString("user", it)
                         editor.apply()
 

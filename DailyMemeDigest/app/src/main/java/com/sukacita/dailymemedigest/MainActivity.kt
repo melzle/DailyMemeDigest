@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         user = getUser(userStr.toString())
+        Global.currentUser = user
         getHomeMemes()
         getUserMemes(user.id)
         getLeaderboard()
@@ -216,6 +217,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+//        updateUser()
     }
 
     private fun updateUser() {
@@ -226,6 +228,10 @@ class MainActivity : AppCompatActivity() {
 
         val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
         txtNameHeader.text = "${user.firstname} ${user.lastname}"
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 
     private fun getHomeMemes() {

@@ -61,6 +61,7 @@ class HomeFragment : Fragment() {
 //            Log.d("CEK_DI_FRAGMENT", getHomeMemes().toString())
 //            Thread.sleep(1000)
             recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes)
+
         }
 
     }

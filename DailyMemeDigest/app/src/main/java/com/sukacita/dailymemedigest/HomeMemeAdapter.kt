@@ -6,9 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.Response
@@ -47,13 +49,23 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
         val img: ImageView = holder.v.findViewById(R.id.imgMeme)
         holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = homeMemes[position].toptext
         holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
-//        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = getDateTime(homeMemes[position].)
+        holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } likes"
+//        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = homeMemes[position]
 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
+
+        val btnLike: AppCompatImageButton = holder.v.findViewById(R.id.btnLike)
+        btnLike.setOnClickListener() {
+            Log.d("press", position.toString())
+        }
     }
 
     override fun getItemCount(): Int {
         return homeMemes.size
+    }
+
+    private fun like(memeId: Int, userId: Int) {
+
     }
 
     fun getMemes() {

@@ -5,5 +5,5 @@ object Global {
     var userMemes: ArrayList<Meme> = arrayListOf()
     var leaderboardArr: ArrayList<Leaderboard> = arrayListOf()
 
-    var user: User = User(0,"", "", "", "", "", 0)
+    var currentUser: User = User(0,"", "", "", "", "", 0)
 }
