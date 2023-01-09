@@ -7,3 +7,4 @@ data class User(val id: Int,
                 val regisDate: String,
                 val avatarUrl: String,
                 val privacySetting: Int)
+

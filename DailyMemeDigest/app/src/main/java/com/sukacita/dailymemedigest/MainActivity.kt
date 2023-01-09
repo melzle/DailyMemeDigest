@@ -1,18 +1,27 @@
 package com.sukacita.dailymemedigest
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -23,16 +32,20 @@ import jp.wasabeef.glide.transformations.BlurTransformation
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
+    val REQUEST_UPDATE = 1
     val fragments = arrayListOf(
         HomeFragment(),
         MyCreationFragment(),
         LeaderboardFragment(),
     )
 
+    var user = User(0,"", "", "", "", "", 0)
+    var header: View? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.drawer_layout)
-
+        getHomeMemes()
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Daily Meme Digest"
@@ -53,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-        val user = getUser(userStr.toString())
+        user = getUser(userStr.toString())
 
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
@@ -93,29 +106,45 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        val header: View = navView.getHeaderView(0)
-        val txtNameHeader: TextView = header.findViewById(R.id.txtName_drawerHeader)
-        val txtUsername: TextView = header.findViewById(R.id.txtUsername_drawerHeader)
-        val fabHeader: FloatingActionButton = header.findViewById(R.id.fabHeader)
-        val imgProfilePic: ImageView = header.findViewById(R.id.imgProfilePic_drawerHeader)
-        val imgBg: ImageView = header.findViewById(R.id.imgBg_drawerHeader)
+        header = navView.getHeaderView(0)
+        val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
+        val txtUsername: TextView = header!!.findViewById(R.id.txtUsername_drawerHeader)
+        val fabHeader: FloatingActionButton = header!!.findViewById(R.id.fabHeader)
+        val imgProfilePic: ImageView = header!!.findViewById(R.id.imgProfilePic_drawerHeader)
+        val imgBg: ImageView = header!!.findViewById(R.id.imgBg_drawerHeader)
 
         txtNameHeader.text = "${user.firstname} ${user.lastname}"
         txtUsername.text = user.username
 
-        val bg_url = "https://media.timeout.com/images/105659619/750/422/image.jpg"
-//        Picasso.get().load(bg_url).into(imgBg)
+        val bgUrl = "https://media.timeout.com/images/105659619/750/422/image.jpg"
 
-        Glide.with(this).load(bg_url).apply(
+        Glide.with(this).load(bgUrl).apply(
             RequestOptions.bitmapTransform(BlurTransformation(15, 2))).into(imgBg)
 
         if (user.avatarUrl != "") {
-//            Picasso.get().load(user.avatarUrl).into(imgProfilePic)
             Glide.with(this).load(user.avatarUrl).into(imgProfilePic)
         }
 
+//        val homeFragment = HomeFragment()
+//        val recyclerHome: RecyclerView = findViewById(R.id.)
+//        getHomeMemes()
+//        val lm: LinearLayoutManager = LinearLayoutManager(this)
+//        recyclerViewSimul.layoutManager=lm
+//        recyclerViewSimul.setHasFixedSize(true)
+//        recyclerViewSimul.adapter=SimulationAdapter(this)
+
         fabHeader.setOnClickListener() {
             logout(shared)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_UPDATE) {
+                updateUser()
+            }
         }
     }
 
@@ -126,26 +155,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun settings(bottomNav: BottomNavigationView): Int {
-//        bottomNav.id
-//        bottomNav.menu.getItem(3).isChecked = false
-//        bottomNav.menu.getItem(0).isChecked = true
-
-
         val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
-//        finish()
-//        val menu = bottomNav.menu
-////        for (i in 0 .. menu.size()) {
-//        val itemStg = menu.getItem(3)
-//        itemStg.isChecked = false
-//
-//        val itemHome = menu.getItem(0)
-//        itemHome.isChecked = true
-//
-////        }
-//
+        startActivityForResult(intent, REQUEST_UPDATE)
 
-//        bottomNav.menu.getItem(0).isChecked = true
         return 0
     }
 
@@ -170,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         if (userObj.getString("firstname") != "") {
             fn = userObj.getString("firstname")
         }
-        if (userObj.getString("lastname") != "") {
+        if (userObj.getString("lastname") != "null") {
             ln = userObj.getString("lastname")
         }
 
@@ -183,5 +195,59 @@ class MainActivity : AppCompatActivity() {
             userObj.getString("avatarurl"),
             userObj.getInt("privacysetting")
         )
+    }
+
+    private fun updateUser() {
+        val sharedFile = "com.sukacita.dailymemedigest"
+        var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
+        val userStr = shared.getString("user", null)
+        user = getUser(userStr.toString())
+
+        val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
+        txtNameHeader.text = "${user.firstname} ${user.lastname}"
+    }
+
+    private fun getHomeMemes() {
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/get_home_memes.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                    Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val data = obj.getJSONArray("data")
+                    Log.d("datalen", data.length().toString())
+                    for(i in 0 until data.length()) {
+                        val memeObj = data.getJSONObject(i)
+                        val meme = Meme(
+                            memeObj.getInt("id"),
+                            memeObj.getString("imageurl"),
+                            memeObj.getString("toptext"),
+                            memeObj.getString("bottomtext"),
+                            memeObj.getInt("numoflikes"),
+                            memeObj.getInt("users_id"),
+                            memeObj.getInt("reportcount")
+                        )
+                        Log.d("objparams", memeObj.getString("toptext"))
+                        Global.homeMemes.add(meme)
+                    }
+                    Log.d("globalmemelen", Global.homeMemes.size.toString())
+                } else {
+                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                return params
+            }
+        }
+        q.add(stringRequest)
+
+
     }
 }

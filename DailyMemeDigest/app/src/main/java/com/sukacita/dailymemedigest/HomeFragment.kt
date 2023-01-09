@@ -1,15 +1,27 @@
 package com.sukacita.dailymemedigest
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.json.JSONObject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_MEME = "meme"
 
 /**
  * A simple [Fragment] subclass.
@@ -18,14 +30,13 @@ private const val ARG_PARAM2 = "param2"
  */
 class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+//    private var meme: Meme? = null
+    private var memes: ArrayList<Meme> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+//            meme = it.getParcelable(ARG_MEME)
         }
     }
 
@@ -34,7 +45,22 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false).apply {
+            val fab: FloatingActionButton = this.findViewById(R.id.fabAdd_homeFrag)
+
+            fab.setOnClickListener() {
+                val intent = Intent(activity, CreateMeme::class.java)
+                activity?.startActivity(intent)
+            }
+
+            memes = getHomeMemes()
+            val lm: LinearLayoutManager = LinearLayoutManager(activity)
+            val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
+            recycler.layoutManager = lm
+            recycler.setHasFixedSize(true)
+            recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes)
+        }
+
     }
 
     companion object {
@@ -48,12 +74,54 @@ class HomeFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(meme: Meme) =
             HomeFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+//                   putParcelable(ARG_MEME, meme)
                 }
             }
+    }
+
+    private fun getHomeMemes(): ArrayList<Meme> {
+        var arrmeme: ArrayList<Meme> = arrayListOf()
+        val q = Volley.newRequestQueue(activity)
+        val url = "https://scheday.site/nmp/get_home_memes.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val data = obj.getJSONArray("data")
+                    for(i in 0 until data.length()) {
+                        val memeObj = data.getJSONObject(i)
+                        val meme = Meme(
+                            memeObj.getInt("id"),
+                            memeObj.getString("imageurl"),
+                            memeObj.getString("toptext"),
+                            memeObj.getString("bottomtext"),
+                            memeObj.getInt("numoflikes"),
+                            memeObj.getInt("users_id"),
+                            memeObj.getInt("reportcount")
+                        )
+                        arrmeme.add(meme)
+                    }
+
+                } else {
+//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                return params
+            }
+        }
+        q.add(stringRequest)
+
+        return arrmeme
     }
 }

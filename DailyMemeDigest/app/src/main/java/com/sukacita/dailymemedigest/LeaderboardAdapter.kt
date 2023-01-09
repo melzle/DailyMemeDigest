@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import org.w3c.dom.Text
 
 class LeaderboardAdapter(val context: Context): RecyclerView.Adapter<LeaderboardAdapter.LeaderboardViewHolder>() {
     class LeaderboardViewHolder(val v: View): RecyclerView.ViewHolder(v)

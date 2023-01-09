@@ -23,7 +23,7 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/imgMeme_Create"
                     android:layout_width="374dp"
                     android:layout_height="284dp"
                     android:layout_marginStart="24dp"
@@ -59,7 +59,7 @@
                     android:text="Image URL"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                    app:layout_constraintTop_toBottomOf="@+id/imgMeme_Create" />
 
                 <TextView
                     android:id="@+id/textView7"
@@ -150,13 +150,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif-black"
+                    android:shadowColor="#000000"
+                    android:shadowRadius="5"
                     android:text="TOP"
                     android:textColor="@color/design_default_color_background"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/imageView" />
+                    app:layout_constraintTop_toTopOf="@+id/imgMeme_Create" />
 
                 <TextView
                     android:id="@+id/txtBottomFill"
@@ -164,10 +166,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:fontFamily="sans-serif-black"
+                    android:shadowColor="#000000"
+                    android:shadowRadius="5"
                     android:text="BOTTOM"
                     android:textColor="@color/design_default_color_background"
                     android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgMeme_Create"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent" />

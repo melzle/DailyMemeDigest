@@ -1,5 +1,6 @@
 package com.sukacita.dailymemedigest
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,6 +17,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONObject
 
 class SettingsActivity : AppCompatActivity() {
+    companion object {
+        val UPDATE_USER = "update"
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -38,6 +44,9 @@ class SettingsActivity : AppCompatActivity() {
 
         if (user.avatarUrl != "") {
             Glide.with(this).load(user.avatarUrl).into(imgProfile)
+        } else {
+            val defaultUrl = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+            Glide.with(this).load(defaultUrl).into(imgProfile)
         }
 
         txtName.text = "${user.firstname} ${user.lastname}"
@@ -60,8 +69,7 @@ class SettingsActivity : AppCompatActivity() {
         chkPrivacy.isChecked = user.privacySetting != 0
 
         btnSave.setOnClickListener() {
-
-            if (txtFirstName.hint != "Enter First Name" || txtFirstName.text != "") {
+            if (txtFirstName.hint != "Enter First Name" || txtFirstName.text != "".toString()) {
                 var privSett = 0
                 if (chkPrivacy.isChecked) {
                     privSett = 1
@@ -80,6 +88,8 @@ class SettingsActivity : AppCompatActivity() {
 
 
                             Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                            updateUser(shared, user.username)
+                            setResult(Activity.RESULT_OK)
                             finish()
                         } else {
                             Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
@@ -102,7 +112,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 q.add(stringRequest)
 
-                finish()
             } else {
                 Toast.makeText(this, "Please fill in your First Name to continue", Toast.LENGTH_SHORT).show()
             }
@@ -134,7 +143,7 @@ class SettingsActivity : AppCompatActivity() {
         if (userObj.getString("firstname") != "") {
             fn = userObj.getString("firstname")
         }
-        if (userObj.getString("lastname") != "") {
+        if (userObj.getString("lastname") != "null") {
             ln = userObj.getString("lastname")
         }
 
@@ -147,5 +156,35 @@ class SettingsActivity : AppCompatActivity() {
             userObj.getString("avatarurl"),
             userObj.getInt("privacysetting")
         )
+    }
+
+    private fun updateUser(shared: SharedPreferences, username: String) {
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/get_user.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val editor = shared.edit()
+                    editor.clear()
+                    editor.putString("user", it)
+                    editor.apply()
+                    Toast.makeText(this, "done", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["username"] = username
+                return params
+            }
+        }
+        q.add(stringRequest)
     }
 }
