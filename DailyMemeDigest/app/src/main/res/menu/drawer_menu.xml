@@ -8,11 +8,11 @@
         android:title="Home" />
     <item
         android:id="@+id/itemMyCreation"
-        android:icon="@drawable/ic_baseline_settings_24"
+        android:icon="@drawable/ic_baseline_emoji_emotions_24"
         android:title="My Creation" />
     <item
         android:id="@+id/itemLeaderboard"
-        android:icon="@drawable/ic_baseline_settings_24"
+        android:icon="@drawable/ic_baseline_leaderboard_24"
         android:title="Leaderboard" />
     <item
         android:id="@+id/itemSettings"

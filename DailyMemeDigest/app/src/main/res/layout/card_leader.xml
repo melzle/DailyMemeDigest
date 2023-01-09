@@ -23,7 +23,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/imgProfile_leader"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="32dp"
@@ -42,7 +42,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="40dp"
                 android:text="Namamu"
-                app:layout_constraintStart_toEndOf="@+id/imageView2"
+                app:layout_constraintStart_toEndOf="@+id/imgProfile_leader"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
