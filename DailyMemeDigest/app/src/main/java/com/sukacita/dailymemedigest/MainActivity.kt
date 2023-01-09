@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         HomeFragment(),
         MyCreationFragment(),
         LeaderboardFragment(),
+        SettingsFragment()
     )
 
     var user = User(0,"", "", "", "", "", 0)
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.itemHome -> 0
                 R.id.itemMyCreation -> 1
                 R.id.itemLeaderboard -> 2
-                R.id.itemSettings -> settings(bottomNav)
+                R.id.itemSettings -> settings(bottomNav, navView)
                 else -> 0
             }, viewPager, navView)
 
@@ -105,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.itemHome -> 0
                 R.id.itemMyCreation -> 1
                 R.id.itemLeaderboard -> 2
-                R.id.itemSettings -> settings(bottomNav)
+                R.id.itemSettings -> settings(bottomNav, navView)
                 else -> 0
             }, viewPager, navView)
 
@@ -164,7 +165,13 @@ class MainActivity : AppCompatActivity() {
         navView.menu.getItem(id).isCheckable = true
     }
 
-    private fun settings(bottomNav: BottomNavigationView): Int {
+    private fun settings(bottomNav: BottomNavigationView, navView: NavigationView): Int {
+        for (i in 0 until 3) {
+            navView.menu.getItem(i).isChecked = false
+            navView.menu.getItem(i).isCheckable = false
+        }
+//        navView.menu.getItem(0).isChecked = true
+//        navView.menu.getItem(0).isCheckable = true
         val intent = Intent(this, SettingsActivity::class.java)
         startActivityForResult(intent, REQUEST_UPDATE)
 
