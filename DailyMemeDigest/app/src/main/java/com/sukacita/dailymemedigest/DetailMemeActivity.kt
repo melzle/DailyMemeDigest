@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -72,6 +73,10 @@ class DetailMemeActivity : AppCompatActivity() {
                 getComments(memeId)
                 Thread.sleep(500)
                 recycler.adapter!!.notifyDataSetChanged()
+                if (commentQty == 0) {
+                    noComment.text = ""
+                }
+                txtComment.text = ""
             } else {
                 Toast.makeText(this, "Comment content can't be empty", Toast.LENGTH_SHORT).show()
             }
@@ -79,6 +84,13 @@ class DetailMemeActivity : AppCompatActivity() {
         btnBack.setOnClickListener() {
             finish()
         }
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
     private fun getComments(idmeme: Int) {

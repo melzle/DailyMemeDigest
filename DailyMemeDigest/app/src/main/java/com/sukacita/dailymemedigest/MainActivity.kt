@@ -161,6 +161,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
+    }
+
     private fun updateMenuSelected(id: Int, viewPager: ViewPager2, navView: NavigationView) {
         viewPager.currentItem = id
         navView.menu.getItem(id).isChecked = true

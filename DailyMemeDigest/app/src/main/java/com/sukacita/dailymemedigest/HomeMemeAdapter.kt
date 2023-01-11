@@ -55,9 +55,20 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         val img: ImageView = holder.v.findViewById(R.id.imgMeme)
         holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = homeMemes[position].toptext
         holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
-        holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } likes"
-        holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} comments"
 
+        var nLikes = homeMemes[position].numoflikes
+        var dLikes = "likes"
+        var nComments = homeMemes[position].comments
+        var dComments = "comments"
+        if (nLikes == 1) {
+            dLikes = "like"
+        }
+        if (nComments == 1) {
+            dComments = "comment"
+        }
+
+        holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } $dLikes"
+        holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} $dComments"
 
         val date = getDate(homeMemes[position].date).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
         holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
@@ -65,9 +76,17 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
 
         val btnLike: AppCompatImageButton = holder.v.findViewById(R.id.btnLike)
-        btnLike.setOnClickListener() {
-            like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+
+        if (homeMemes[position].users_id == idUser) {
+            btnLike.setImageResource(R.drawable.ic_baseline_favorite_grey_24)
+            btnLike.isClickable = false
+        } else {
+            btnLike.setOnClickListener() {
+                like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+                btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
+            }
         }
+
 
         val btnComment: AppCompatImageButton = holder.v.findViewById(R.id.btnComment)
         btnComment.setOnClickListener() {
