@@ -91,7 +91,6 @@ class SettingsActivity : AppCompatActivity() {
                 val stringRequest = object : StringRequest(
                     Request.Method.POST, url,
                     Response.Listener<String> {
-//                    Log.d("apiresult", it)
                         val obj = JSONObject(it)
                         if(obj.getString("result") == "OK") {
 //                            var json = "{\"result\":\"OK\",\"data\":[{\"id\":1,\"username\":\"budiman\",\"password\":\"budiman\",\"firstname\":\"Budiman\",\"lastname\":\"Stonks\",\"regisDate\":\"2023-01-06 22:30:18\",\"avatarurl\":\"https:\\/\\/blue.kumparan.com\\/image\\/upload\\/fl_progressive,fl_lossy,c_fill,q_auto:best,w_640\\/v1612510485\\/werkeh8ecxb4lxemiru3.jpg\",\"privacysetting\":1}]}"

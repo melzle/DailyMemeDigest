@@ -41,7 +41,7 @@ class MyCreationFragment : Fragment() {
                 val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView)
                 recycler.layoutManager = lm
                 recycler.setHasFixedSize(true)
-                recycler.adapter = MyCreationAdapter(requireActivity(), Global.userMemes)
+                recycler.adapter = MyCreationAdapter(requireActivity(), Global.userMemes, Global.currentUser.id)
                 txtWarn.text = ""
             } else {
                 txtWarn.text = "You haven't created any memes :("

@@ -1,5 +1,6 @@
 package com.sukacita.dailymemedigest
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +21,7 @@ import org.json.JSONObject
 import org.w3c.dom.Text
 
 class DetailMemeActivity : AppCompatActivity() {
-    private val comments: ArrayList<Comment> = arrayListOf()
+//    private val comments: ArrayList<Comment> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,7 @@ class DetailMemeActivity : AppCompatActivity() {
         val recycler: RecyclerView = this.findViewById(R.id.recyclerComment)
         recycler.layoutManager = lm
         recycler.setHasFixedSize(true)
-        recycler.adapter = CommentAdapter(this, comments)
+        recycler.adapter = CommentAdapter(this, Global.comments)
 
         val noComment: TextView = findViewById(R.id.txtNoComment)
         if (commentQty != 0) {
@@ -62,28 +63,35 @@ class DetailMemeActivity : AppCompatActivity() {
         Picasso.get().load(url).into(img)
 
         val btnInsert: ImageButton = findViewById(R.id.btnComments)
+        val btnBack: ImageButton = findViewById(R.id.btnBack)
         val txtComment: TextView = findViewById(R.id.txtComment)
         btnInsert.setOnClickListener() {
             if (txtComment.text.toString() != "") {
                 insertComment(txtComment.text.toString(), userId, memeId)
+                Thread.sleep(500)
+                getComments(memeId)
+                Thread.sleep(500)
+                recycler.adapter!!.notifyDataSetChanged()
             } else {
                 Toast.makeText(this, "Comment content can't be empty", Toast.LENGTH_SHORT).show()
             }
         }
+        btnBack.setOnClickListener() {
+            finish()
+        }
     }
 
     private fun getComments(idmeme: Int) {
+        Global.comments.clear()
         val q = Volley.newRequestQueue(this)
         val url = "https://scheday.site/nmp/get_comments.php"
 
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
-//                Log.d("INI_HOME_BUAT_GLOBAL", it)
                 val obj = JSONObject(it)
                 if(obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
-//                    Log.d("datalen", data.length().toString())
                     for(i in 0 until data.length()) {
                         val commentObj = data.getJSONObject(i)
                         val comment = Comment(
@@ -95,12 +103,8 @@ class DetailMemeActivity : AppCompatActivity() {
                             commentObj.getString("date"),
                             commentObj.getInt("numlikes")
                         )
-//                        Log.d("objparams", memeObj.getString("toptext"))
-                        comments.add(comment)
+                        Global.comments.add(comment)
                     }
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
-                } else {
-//                    Toast.makeText(this, obj.getString("result"), Toast.LENGTH_SHORT).show()
                 }},
             Response.ErrorListener {
                 Log.d("cekparams", it.message.toString())
@@ -122,7 +126,6 @@ class DetailMemeActivity : AppCompatActivity() {
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
-                Log.d("INI_HOME_BUAT_GLOBAL", it)
                 val obj = JSONObject(it)
                 if(obj.getString("result") == "OK") {
                     Toast.makeText(this, "Insert comment success", Toast.LENGTH_SHORT).show()

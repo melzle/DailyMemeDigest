@@ -3,6 +3,7 @@ package com.sukacita.dailymemedigest
 import android.content.Context
 import android.content.Intent
 import android.media.Image
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -21,6 +23,7 @@ import com.squareup.picasso.Picasso
 import org.json.JSONObject
 import org.w3c.dom.Text
 import java.text.SimpleDateFormat
+import java.time.ZoneId
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -36,6 +39,7 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         return HomeMemeViewHolder(v)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: HomeMemeViewHolder, position: Int) {
 //        with(homeMemes[position]){
 ////            val time = time
@@ -53,7 +57,10 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
         holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } likes"
         holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} comments"
-//        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = homeMemes[position]
+
+
+        val date = getDate(homeMemes[position].date).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
+        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
 
@@ -115,48 +122,9 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         q.add(stringRequest)
     }
 
-    fun getMemes() {
-        val q = Volley.newRequestQueue(this.context)
-        val url = "https://scheday.site/nmp/get_home_memes.php"
-
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, url,
-            Response.Listener<String> {
-                Log.d("apiresult", it)
-                val obj = JSONObject(it)
-                if(obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    Log.d("datalen", data.length().toString())
-                    for(i in 0 until data.length()) {
-                        val memeObj = data.getJSONObject(i)
-                        val meme = Meme(
-                            memeObj.getInt("id"),
-                            memeObj.getString("imageurl"),
-                            memeObj.getString("toptext"),
-                            memeObj.getString("bottomtext"),
-                            memeObj.getInt("numoflikes"),
-                            memeObj.getInt("users_id"),
-                            memeObj.getInt("reportcount"),
-                            memeObj.getInt("commentcount")
-                        )
-                        Log.d("dariadapter", memeObj.getString("toptext"))
-                        Global.homeMemes.add(meme)
-                    }
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
-                } else {
-//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
-                }},
-            Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
-            }
-        ) {
-            override fun getParams(): MutableMap<String, String> {
-                val params = HashMap<String, String>()
-                return params
-            }
-        }
-        q.add(stringRequest)
+    fun getDate(s: String): Date {
+        val strArr = s.split(" ")
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        return sdf.parse(strArr[0])
     }
-
-
 }

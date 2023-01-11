@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     var user = User(0,"", "", "", "", "", 0)
     var header: View? = null
+    var loadCompleted = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,22 +74,20 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
-        user = getUser(userStr.toString())
-        Global.currentUser = user
-        getHomeMemes()
-        getUserMemes(user.id)
-        getLeaderboard()
-        Thread.sleep(2000)
-
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
         val navView: NavigationView = findViewById(R.id.navView)
+        header = navView.getHeaderView(0)
+        user = getUser(userStr.toString())
+        updateUserSpref(user.username)
+        Thread.sleep(500)
+        updateUser()
+        Global.currentUser = user
 
-//        val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
-//        val re = viewPager.findfr
-
-
-//        updateMenuSelected(0, viewPager, navView)
+        getHomeMemes()
+        getUserMemes(user.id)
+        getLeaderboard()
+        Thread.sleep(1500)
 
         viewPager.adapter = MyViewPagerAdapter(this, fragments)
         viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
@@ -122,7 +121,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        header = navView.getHeaderView(0)
         val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
         val txtUsername: TextView = header!!.findViewById(R.id.txtUsername_drawerHeader)
         val fabHeader: FloatingActionButton = header!!.findViewById(R.id.fabHeader)
@@ -145,21 +143,11 @@ class MainActivity : AppCompatActivity() {
             Glide.with(this).load(defaultPfp).into(imgProfilePic)
         }
 
-//        val homeFragment = HomeFragment()
-//        val recyclerHome: RecyclerView = findViewById(R.id.)
-//        getHomeMemes()
-//        val lm: LinearLayoutManager = LinearLayoutManager(this)
-//        recyclerViewSimul.layoutManager=lm
-//        recyclerViewSimul.setHasFixedSize(true)
-//        recyclerViewSimul.adapter=SimulationAdapter(this)
-
         fabHeader.setOnClickListener() {
             logout(shared)
         }
 
-//        val frag = FragmentManager.findFragment<Fragment?>(fragments[0].requireActivity().)
-//        val re = frag.view?.findViewById<RecyclerView>(R.id.MemeRecyclerView_homefrag)
-//        re?.adapter?.notifyDataSetChanged()
+        loadCompleted = 1
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -168,6 +156,7 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_UPDATE) {
                 updateUser()
+                updateHeader()
             }
         }
     }
@@ -183,8 +172,7 @@ class MainActivity : AppCompatActivity() {
             navView.menu.getItem(i).isChecked = false
             navView.menu.getItem(i).isCheckable = false
         }
-//        navView.menu.getItem(0).isChecked = true
-//        navView.menu.getItem(0).isCheckable = true
+
         val intent = Intent(this, SettingsActivity::class.java)
         startActivityForResult(intent, REQUEST_UPDATE)
 
@@ -230,7 +218,40 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-//        updateUser()
+        
+    }
+
+    private fun updateUserSpref(username: String) {
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/get_user.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val sharedFile = "com.sukacita.dailymemedigest"
+                    var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
+                    val userStr = shared.getString("user", null)
+
+                    val editor = shared.edit()
+                    editor.clear()
+                    editor.putString("user", it)
+                    editor.apply()
+                } else {
+                    Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["username"] = username
+                return params
+            }
+        }
+        q.add(stringRequest)
     }
 
     private fun updateUser() {
@@ -238,7 +259,9 @@ class MainActivity : AppCompatActivity() {
         var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
         val userStr = shared.getString("user", null)
         user = getUser(userStr.toString())
+    }
 
+    private fun updateHeader() {
         val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
         txtNameHeader.text = "${user.firstname} ${user.lastname}"
         finish()
@@ -246,6 +269,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(0, 0)
     }
+
 
     private fun getHomeMemes() {
         Global.homeMemes.clear()
@@ -270,12 +294,11 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
                             0,
-                            memeObj.getInt("commentcount")
+                            memeObj.getInt("commentcount"),
+                            memeObj.getString("date")
                         )
-//                        Log.d("objparams", memeObj.getString("toptext"))
                         Global.homeMemes.add(meme)
                     }
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
                 } else {
                     Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
                 }},
@@ -314,14 +337,12 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
                             0,
-                            memeObj.getInt("commentcount")
+                            memeObj.getInt("commentcount"),
+                            memeObj.getString("date")
                         )
                         Log.d("objparams", memeObj.getString("toptext"))
                         Global.userMemes.add(meme)
                     }
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
-                } else {
-//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
                 }},
             Response.ErrorListener {
                 Log.d("cekparams", it.message.toString())
@@ -344,11 +365,9 @@ class MainActivity : AppCompatActivity() {
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
-                Log.d("apiresult", it)
                 val obj = JSONObject(it)
                 if(obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
-                    Log.d("datalen", data.length().toString())
                     for(i in 0 until data.length()) {
                         val leaderboardobj = data.getJSONObject(i)
                         val lb = Leaderboard(
@@ -360,9 +379,6 @@ class MainActivity : AppCompatActivity() {
                         )
                         Global.leaderboardArr.add(lb)
                     }
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
-                } else {
-//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
                 }},
             Response.ErrorListener {
                 Log.d("cekparams", it.message.toString())

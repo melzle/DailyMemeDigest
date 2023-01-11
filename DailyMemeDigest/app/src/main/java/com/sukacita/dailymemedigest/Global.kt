@@ -6,4 +6,6 @@ object Global {
     var leaderboardArr: ArrayList<Leaderboard> = arrayListOf()
 
     var currentUser: User = User(0,"", "", "", "", "", 0)
+
+    val comments: ArrayList<Comment> = arrayListOf()
 }
