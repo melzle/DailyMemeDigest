@@ -59,11 +59,8 @@ class HomeFragment : Fragment() {
             val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
             recycler.layoutManager = lm
             recycler.setHasFixedSize(true)
-            Log.d("CEK_ISI_GLOBAL_DR_FRGMT", getHomeMemes().toString())
-//            Thread.sleep(1000)
 
-            recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes)
-
+            recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes, Global.currentUser.id)
         }
 
     }
@@ -109,7 +106,8 @@ class HomeFragment : Fragment() {
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            0
+                            0,
+                            memeObj.getInt("commentcount")
                         )
                         arrmeme.add(meme)
                     }

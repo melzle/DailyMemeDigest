@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         getHomeMemes()
         getUserMemes(user.id)
         getLeaderboard()
-        Thread.sleep(500)
+        Thread.sleep(2000)
 
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         Glide.with(this).load(bgUrl).apply(
             RequestOptions.bitmapTransform(BlurTransformation(15, 2))).into(imgBg)
+        Toast.makeText(this, "avatarurl ${user.avatarUrl}", Toast.LENGTH_SHORT).show()
 
         if (user.avatarUrl != "") {
             Glide.with(this).load(user.avatarUrl).into(imgProfilePic)
@@ -268,7 +269,8 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            0
+                            0,
+                            memeObj.getInt("commentcount")
                         )
 //                        Log.d("objparams", memeObj.getString("toptext"))
                         Global.homeMemes.add(meme)
@@ -311,7 +313,8 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            0
+                            0,
+                            memeObj.getInt("commentcount")
                         )
                         Log.d("objparams", memeObj.getString("toptext"))
                         Global.userMemes.add(meme)

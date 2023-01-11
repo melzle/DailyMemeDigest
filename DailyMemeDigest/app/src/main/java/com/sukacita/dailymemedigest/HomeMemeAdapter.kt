@@ -1,6 +1,7 @@
 package com.sukacita.dailymemedigest
 
 import android.content.Context
+import android.content.Intent
 import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,19 +19,20 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.squareup.picasso.Picasso
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): RecyclerView.Adapter<HomeMemeAdapter.HomeMemeViewHolder>() {
+class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val idUser: Int): RecyclerView.Adapter<HomeMemeAdapter.HomeMemeViewHolder>() {
     class HomeMemeViewHolder(val v: View): RecyclerView.ViewHolder(v)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeMemeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         var v = inflater.inflate(R.layout.card_memes, parent, false)
 //        getMemes()
-        Log.d("adaptermemecount", Global.homeMemes.size.toString())
+//        Log.d("adaptermemecount", Global.homeMemes.size.toString())
         return HomeMemeViewHolder(v)
     }
 
@@ -41,7 +43,7 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
 ////            holder.v.txtTimeCustomer.text = "0$time.00 - $customers"
 //            val img: ImageView = holder.v.findViewById(R.id.imgMeme)
 //            holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = toptext
-//            holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = bottomtext
+//            holder.v.findViewById<TextView>(R.id.bottomtext_cSardmeme).text = bottomtext
 //
 //            Picasso.get().load(imageurl).into(img)
 //        }
@@ -50,13 +52,28 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
         holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = homeMemes[position].toptext
         holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
         holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } likes"
+        holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} comments"
 //        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = homeMemes[position]
 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
 
         val btnLike: AppCompatImageButton = holder.v.findViewById(R.id.btnLike)
         btnLike.setOnClickListener() {
-            Log.d("press", position.toString())
+            like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+        }
+
+        val btnComment: AppCompatImageButton = holder.v.findViewById(R.id.btnComment)
+        btnComment.setOnClickListener() {
+            val meme = homeMemes[position]
+            val intent = Intent(context, DetailMemeActivity::class.java)
+            intent.putExtra("meme_id", meme.id)
+            intent.putExtra("user_id", idUser)
+            intent.putExtra("top_meme", meme.toptext)
+            intent.putExtra("bottom_meme", meme.bottomtext)
+            intent.putExtra("url", meme.imageurl)
+            intent.putExtra("likes", meme.numoflikes)
+            intent.putExtra("comments", meme.comments)
+            context.startActivity(intent)
         }
     }
 
@@ -64,8 +81,38 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
         return homeMemes.size
     }
 
-    private fun like(memeId: Int, userId: Int) {
+    private fun like(memeId: Int, userId: Int, txtLikes: TextView, position: Int) {
+        val q = Volley.newRequestQueue(this.context)
+        val url = "https://scheday.site/nmp/like_meme.php"
 
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    Toast.makeText(context, "Like Meme Success", Toast.LENGTH_SHORT).show()
+                    val likesArr = txtLikes.text.split(' ')
+                    val likes = likesArr[0].toString().toInt()
+//                    txtLikes.text = "${likes+1} likes"
+//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
+                    homeMemes[position].numoflikes = homeMemes[position].numoflikes+1
+                    this.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(context, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+//                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["userid"] = userId.toString()
+                params["memeid"] = memeId.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
     }
 
     fun getMemes() {
@@ -89,7 +136,8 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>): Rec
                             memeObj.getString("bottomtext"),
                             memeObj.getInt("numoflikes"),
                             memeObj.getInt("users_id"),
-                            memeObj.getInt("reportcount")
+                            memeObj.getInt("reportcount"),
+                            memeObj.getInt("commentcount")
                         )
                         Log.d("dariadapter", memeObj.getString("toptext"))
                         Global.homeMemes.add(meme)
