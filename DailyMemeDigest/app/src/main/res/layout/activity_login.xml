@@ -25,7 +25,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="36dp"
         android:text="Username"
         android:textSize="16sp"
@@ -36,11 +36,13 @@
         android:id="@+id/txtUsername"
         android:layout_width="294dp"
         android:layout_height="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Username"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -48,7 +50,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="28dp"
         android:text="Password"
         android:textSize="16sp"
@@ -59,11 +61,13 @@
         android:id="@+id/txtPassword"
         android:layout_width="292dp"
         android:layout_height="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -72,9 +76,11 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="293dp"
         android:layout_height="64dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="28dp"
         android:text="create account"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.011"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
 
@@ -82,9 +88,11 @@
         android:id="@+id/btnSignIn_LoginActivity"
         android:layout_width="296dp"
         android:layout_height="62dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:text="sign in"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCreateAcc_LoginActivity" />
 
