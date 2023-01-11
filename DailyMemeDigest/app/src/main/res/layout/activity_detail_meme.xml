@@ -161,9 +161,13 @@
                     android:id="@+id/txtNoComment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
                     android:text="TextView"
-                    tools:layout_editor_absoluteX="185dp"
-                    tools:layout_editor_absoluteY="405dp" />
+                    app:layout_constraintBottom_toTopOf="@+id/txtComment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerComment"
@@ -173,6 +177,7 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cardView" />
             </androidx.constraintlayout.widget.ConstraintLayout>
