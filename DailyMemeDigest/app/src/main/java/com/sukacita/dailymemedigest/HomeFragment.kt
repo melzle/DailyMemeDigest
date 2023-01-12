@@ -61,6 +61,8 @@ class HomeFragment : Fragment() {
             recycler.setHasFixedSize(true)
 
             recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes, Global.currentUser.id)
+
+
         }
 
     }

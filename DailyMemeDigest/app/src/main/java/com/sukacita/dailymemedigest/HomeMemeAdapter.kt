@@ -13,7 +13,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.Response
@@ -80,20 +82,28 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         if (homeMemes[position].users_id == idUser) {
             btnLike.setImageResource(R.drawable.ic_baseline_favorite_grey_24)
             btnLike.isClickable = false
+//            btnLike.isEnabled = false
         } else {
             if (homeMemes[position].isLiked == 0) {
-                btnLike.setOnClickListener() {
-                    like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
-                    btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
-                }
+                btnLike.setImageResource(R.drawable.ic_baseline_favorite_border_24)
             } else {
                 btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
             }
+
+            btnLike.setOnClickListener() {
+                if (homeMemes[position].isLiked == 0) {
+                    like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+                    btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
+                    homeMemes[position].isLiked = 1
+                    holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } $dLikes"
+                } else {
+                    unLike(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+                    btnLike.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+                    homeMemes[position].isLiked = 0
+                    holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } $dLikes"
+                }
+            }
         }
-
-//        holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} $dComments"
-
-
 
         val btnComment: AppCompatImageButton = holder.v.findViewById(R.id.btnComment)
         btnComment.setOnClickListener() {
@@ -114,6 +124,11 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         return homeMemes.size
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+//        recyclerView.findview
+    }
+
     private fun like(memeId: Int, userId: Int, txtLikes: TextView, position: Int) {
         val q = Volley.newRequestQueue(this.context)
         val url = "https://scheday.site/nmp/like_meme.php"
@@ -130,7 +145,42 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
 //                    txtLikes.text = "${likes+1} likes"
 //                    Log.d("globalmemelen", Global.homeMemes.size.toString())
                     homeMemes[position].numoflikes = homeMemes[position].numoflikes+1
-                    this.notifyDataSetChanged()
+//                    this.notifyDataSetChanged()
+                    this.notifyItemChanged(position)
+                } else {
+                    Toast.makeText(context, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+//                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["userid"] = userId.toString()
+                params["memeid"] = memeId.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
+    }
+
+    private fun unLike(memeId: Int, userId: Int, txtLikes: TextView, position: Int) {
+        val q = Volley.newRequestQueue(this.context)
+        val url = "https://scheday.site/nmp/undo_like_meme.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("apiresult", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    Toast.makeText(context, "unLike Meme Success", Toast.LENGTH_SHORT).show()
+                    val likesArr = txtLikes.text.split(' ')
+                    val likes = likesArr[0].toString().toInt()
+
+                    homeMemes[position].numoflikes = homeMemes[position].numoflikes-1
+//                    this.notifyDataSetChanged()
+                    this.notifyItemChanged(position)
                 } else {
                     Toast.makeText(context, obj.getString("message"), Toast.LENGTH_SHORT).show()
                 }},
