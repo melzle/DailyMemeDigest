@@ -8,10 +8,11 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="4dp"
-        app:cardBackgroundColor="@color/primaryColor"
+        app:cardBackgroundColor="@color/secondaryColor"
         app:cardCornerRadius="5dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -31,7 +32,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/Name"
-                android:textColor="@color/primaryTextColor"
+                android:textColor="@color/secondaryTextColor"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +43,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="Wow! so funny man"
-                android:textColor="@color/primaryTextColor"
+                android:textColor="@color/secondaryTextColor"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtCommentator" />
 
@@ -52,16 +53,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:text="10 Jan 23"
-                android:textColor="@color/primaryTextColor"
+                android:textColor="@color/secondaryTextColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/txtCommentator" />
 
             <ImageButton
                 android:id="@+id/btnDeleteComment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="46dp"
+                android:layout_height="39dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
+                android:background="@null"
                 android:tint="#9F2828"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,9 +71,10 @@
 
             <ImageButton
                 android:id="@+id/btnLikeComment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="42dp"
+                android:layout_height="39dp"
                 android:layout_marginBottom="4dp"
+                android:background="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnDeleteComment"
                 app:srcCompat="@drawable/ic_baseline_favorite_border_24" />
@@ -80,10 +83,12 @@
                 android:id="@+id/txtLikesComment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
                 android:text="0 Likes"
                 app:layout_constraintBottom_toBottomOf="@+id/btnLikeComment"
                 app:layout_constraintEnd_toStartOf="@+id/btnLikeComment"
-                app:layout_constraintTop_toTopOf="@+id/btnLikeComment" />
+                app:layout_constraintTop_toTopOf="@+id/btnLikeComment"
+                app:layout_constraintVertical_bias="0.45" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
