@@ -21,7 +21,7 @@ class LeaderboardAdapter(val context: Context): RecyclerView.Adapter<Leaderboard
 
     override fun onBindViewHolder(holder: LeaderboardViewHolder, position: Int) {
         with(Global.leaderboardArr[position]){
-            val imgProfile: ImageView = holder.v.findViewById(R.id.imgProfile_leader)
+            val imgProfile: ImageView = holder.v.findViewById(R.id.imgProfilePic_drawerHeader)
             val txtName: TextView = holder.v.findViewById(R.id.txtName)
             val txtLikes: TextView = holder.v.findViewById(R.id.txtJumlahLike)
 

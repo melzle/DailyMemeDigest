@@ -37,7 +37,6 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-//            meme = it.getParcelable(ARG_MEME)
 
         }
     }
@@ -54,17 +53,65 @@ class HomeFragment : Fragment() {
                 val intent = Intent(activity, CreateMeme::class.java)
                 activity?.startActivityForResult(intent, REQUEST_UPDATE)
             }
-
             val lm: LinearLayoutManager = LinearLayoutManager(activity)
             val recycler: RecyclerView = this.findViewById(R.id.MemeRecyclerView_homefrag)
             recycler.layoutManager = lm
             recycler.setHasFixedSize(true)
-
             recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes, Global.currentUser.id)
-
-
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        Global.homeMemes.clear()
+        val q = Volley.newRequestQueue(activity)
+        val url = "https://scheday.site/nmp/get_home_memes.php"
+
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("LOG_MEME_HOME_FRAGMENT", it)
+                val obj = JSONObject(it)
+                if(obj.getString("result") == "OK") {
+                    val data = obj.getJSONArray("data")
+                    for(i in 0 until data.length()) {
+                        val memeObj = data.getJSONObject(i)
+                        val meme = Meme(
+                            memeObj.getInt("id"),
+                            memeObj.getString("imageurl"),
+                            memeObj.getString("toptext"),
+                            memeObj.getString("bottomtext"),
+                            memeObj.getInt("numoflikes"),
+                            memeObj.getInt("users_id"),
+                            0,
+                            memeObj.getInt("commentcount"),
+                            memeObj.getString("date"),
+                            memeObj.getInt("isLiked")
+                        )
+                        Global.homeMemes.add(meme)
+                    }
+                    val lm: LinearLayoutManager = LinearLayoutManager(activity)
+                    val recycler: RecyclerView = requireView().findViewById(R.id.MemeRecyclerView_homefrag)
+                    recycler.layoutManager = lm
+                    recycler.setHasFixedSize(true)
+
+                    recycler.adapter = HomeMemeAdapter(requireActivity(), Global.homeMemes, Global.currentUser.id)
+                } else {
+//                    Toast.makeText(this, "Invalid credentials. Please check your username and password", Toast.LENGTH_SHORT).show()
+                }},
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["userid"] = Global.currentUser.id.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
+        Thread.sleep(1000)
     }
 
     companion object {

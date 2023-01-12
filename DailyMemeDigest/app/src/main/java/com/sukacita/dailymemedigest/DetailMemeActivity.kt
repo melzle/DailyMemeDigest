@@ -73,6 +73,7 @@ class DetailMemeActivity : AppCompatActivity() {
                 getComments(memeId)
                 Thread.sleep(500)
                 recycler.adapter!!.notifyDataSetChanged()
+//                recycler.adapter!!.notifyItemInserted(Global.comments.size-1)
                 if (commentQty == 0) {
                     noComment.text = ""
                 }

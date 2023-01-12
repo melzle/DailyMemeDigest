@@ -36,24 +36,12 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeMemeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         var v = inflater.inflate(R.layout.card_memes, parent, false)
-//        getMemes()
-//        Log.d("adaptermemecount", Global.homeMemes.size.toString())
+
         return HomeMemeViewHolder(v)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: HomeMemeViewHolder, position: Int) {
-//        with(homeMemes[position]){
-////            val time = time
-////            val customers = nCustomers
-////            holder.v.txtTimeCustomer.text = "0$time.00 - $customers"
-//            val img: ImageView = holder.v.findViewById(R.id.imgMeme)
-//            holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = toptext
-//            holder.v.findViewById<TextView>(R.id.bottomtext_cSardmeme).text = bottomtext
-//
-//            Picasso.get().load(imageurl).into(img)
-//        }
-//        Log.d("cek", homeMemes.toString())
         val img: ImageView = holder.v.findViewById(R.id.imgMeme)
         holder.v.findViewById<TextView>(R.id.toptext_cardmeme).text = homeMemes[position].toptext
         holder.v.findViewById<TextView>(R.id.bottomtext_cardmeme).text = homeMemes[position].bottomtext
@@ -82,7 +70,6 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         if (homeMemes[position].users_id == idUser) {
             btnLike.setImageResource(R.drawable.ic_baseline_favorite_grey_24)
             btnLike.isClickable = false
-//            btnLike.isEnabled = false
         } else {
             if (homeMemes[position].isLiked == 0) {
                 btnLike.setImageResource(R.drawable.ic_baseline_favorite_border_24)
@@ -137,16 +124,12 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
                     Toast.makeText(context, "Like Meme Success", Toast.LENGTH_SHORT).show()
                     val likesArr = txtLikes.text.split(' ')
                     val likes = likesArr[0].toString().toInt()
-//                    txtLikes.text = "${likes+1} likes"
-//                    Log.d("globalmemelen", Global.homeMemes.size.toString())
                     homeMemes[position].numoflikes = homeMemes[position].numoflikes+1
-//                    this.notifyDataSetChanged()
                     this.notifyItemChanged(position)
                 } else {
                     Toast.makeText(context, obj.getString("message"), Toast.LENGTH_SHORT).show()
                 }},
             Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
             }
         ) {
             override fun getParams(): MutableMap<String, String> {
@@ -174,13 +157,11 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
                     val likes = likesArr[0].toString().toInt()
 
                     homeMemes[position].numoflikes = homeMemes[position].numoflikes-1
-//                    this.notifyDataSetChanged()
                     this.notifyItemChanged(position)
                 } else {
                     Toast.makeText(context, obj.getString("message"), Toast.LENGTH_SHORT).show()
                 }},
             Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
             }
         ) {
             override fun getParams(): MutableMap<String, String> {

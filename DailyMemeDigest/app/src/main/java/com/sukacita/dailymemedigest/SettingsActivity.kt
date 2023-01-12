@@ -17,6 +17,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -29,27 +30,23 @@ import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.Base64.getEncoder
 import kotlin.collections.HashMap
 
 class SettingsActivity : AppCompatActivity() {
-    companion object {
-        val UPDATE_USER = "update"
-    }
 
-    val REQUEST_IMG_CAPTURE = 2
-    val REQUEST_GALLERY = 3
-    final val REQUEST_ID_MULTIPLE_PERMISSIONS = 101
+    val REQUEST_ID_MULTIPLE_PERMISSIONS = 101
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
 
         val imgProfile: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
         val txtName: TextView = findViewById(R.id.txtName_SettingsActivity)
@@ -94,11 +91,12 @@ class SettingsActivity : AppCompatActivity() {
         chkPrivacy.isChecked = user.privacySetting != 0
 
         btnSave.setOnClickListener() {
-            if (txtFirstName.hint != "Enter First Name" || txtFirstName.text != "".toString()) {
+            if (txtFirstName.hint.toString() != "Enter First Name" || txtFirstName.toString() != "") {
                 var privSett = 0
                 if (chkPrivacy.isChecked) {
                     privSett = 1
                 }
+//                user.firstname = txtFirstName.text.toString()
 
                 val q = Volley.newRequestQueue(this)
                 val url = "https://scheday.site/nmp/update_profile.php"
@@ -107,17 +105,15 @@ class SettingsActivity : AppCompatActivity() {
                     Request.Method.POST, url,
                     Response.Listener<String> {
                         val obj = JSONObject(it)
+                        Log.d("PROFILE", it)
                         if(obj.getString("result") == "OK") {
-//                            var json = "{\"result\":\"OK\",\"data\":[{\"id\":1,\"username\":\"budiman\",\"password\":\"budiman\",\"firstname\":\"Budiman\",\"lastname\":\"Stonks\",\"regisDate\":\"2023-01-06 22:30:18\",\"avatarurl\":\"https:\\/\\/blue.kumparan.com\\/image\\/upload\\/fl_progressive,fl_lossy,c_fill,q_auto:best,w_640\\/v1612510485\\/werkeh8ecxb4lxemiru3.jpg\",\"privacysetting\":1}]}"
-
-
                             Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
                             updateUser(shared, user.username)
 
                             setResult(Activity.RESULT_OK)
                             finish()
                         } else {
-                            Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "No changes to make", Toast.LENGTH_SHORT).show()
                         }},
                     Response.ErrorListener {
                         Log.d("cekparams", it.message.toString())
@@ -126,11 +122,22 @@ class SettingsActivity : AppCompatActivity() {
                     override fun getParams(): MutableMap<String, String> {
                         val params = HashMap<String, String>()
                         params["username"] = user.username
-                        params["firstname"] = txtFirstName.text.toString()
+//                        params["firstname"] = user.firstname
+                        if (txtFirstName.hint.toString() != "Enter First Name" || txtFirstName.text.toString() != "") {
+                            if (txtFirstName.text.toString() != "") {
+                                params["firstname"] = txtFirstName.text.toString()
+                            } else {
+                                params["firstname"] = txtFirstName.hint.toString()
+                            }
+                        }
                         params["avatarurl"] = user.avatarUrl
                         params["privacysetting"] = privSett.toString()
-                        if (txtLastName.hint != "Enter Last Name (optional)" || txtLastName.text != "") {
-                            params["lastname"] = txtLastName.text.toString()
+                        if (txtLastName.hint.toString() != "Enter Last Name (optional)" || txtLastName.text.toString() != "") {
+                            if (txtLastName.text.toString() != "") {
+                                params["lastname"] = txtLastName.text.toString()
+                            } else {
+                                params["lastname"] = txtLastName.hint.toString()
+                            }
                         }
                         return params
                     }
@@ -140,8 +147,6 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Please fill in your First Name to continue", Toast.LENGTH_SHORT).show()
             }
-
-
         }
 
         fab.setOnClickListener() {
@@ -150,14 +155,6 @@ class SettingsActivity : AppCompatActivity() {
 
         val fabEditPhoto: FloatingActionButton = findViewById(R.id.fabProfilePic)
         fabEditPhoto.setOnClickListener() {
-//            if(ContextCompat.checkSelfPermission(this,
-//                    Manifest.permission.CAMERA) !=
-//                PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this,
-//                    arrayOf(Manifest.permission.CAMERA), REQUEST_IMG_CAPTURE)
-//            } else {
-//                takePicture()
-//            }
             if(checkAndRequestPermissions(this)){
                 chooseImage(this);
             }
@@ -168,8 +165,6 @@ class SettingsActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK)
             finish()
         }
-
-
     }
 
     private fun chooseImage(context: Context) {
@@ -213,7 +208,7 @@ class SettingsActivity : AppCompatActivity() {
             ) {
                 Toast.makeText(
                     applicationContext,
-                    "FlagUp Requires Access to Camara.", Toast.LENGTH_SHORT
+                    "Camera access is required", Toast.LENGTH_SHORT
                 )
                     .show()
             } else if (ContextCompat.checkSelfPermission(
@@ -223,7 +218,7 @@ class SettingsActivity : AppCompatActivity() {
             ) {
                 Toast.makeText(
                     applicationContext,
-                    "FlagUp Requires Access to Your Storage.",
+                    "Storage access is required",
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
@@ -232,6 +227,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val imageView: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
@@ -240,6 +236,7 @@ class SettingsActivity : AppCompatActivity() {
                 0 -> if (resultCode == RESULT_OK && data != null) {
                     val selectedImage = data.extras!!["data"] as Bitmap?
                     imageView!!.setImageBitmap(selectedImage)
+                    upload(selectedImage!!)
                 }
                 1 -> if (resultCode == RESULT_OK && data != null) {
                     val selectedImage = data.data
@@ -252,6 +249,7 @@ class SettingsActivity : AppCompatActivity() {
                             val columnIndex = cursor.getColumnIndex(filePathColumn[0])
                             val picturePath = cursor.getString(columnIndex)
                             imageView!!.setImageBitmap(BitmapFactory.decodeFile(picturePath))
+                            upload(BitmapFactory.decodeFile(picturePath))
                             cursor.close()
                         }
                     }
@@ -260,10 +258,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-//    companion object {
-//        val REQUEST_ID_MULTIPLE_PERMISSIONS = 101
-
-        // function to check permission
         fun checkAndRequestPermissions(context: Activity?): Boolean {
             val WExtstorePermission = ContextCompat.checkSelfPermission(
                 context!!,
@@ -291,7 +285,6 @@ class SettingsActivity : AppCompatActivity() {
             }
             return true
         }
-//    }
 
     private fun logout(shared: SharedPreferences) {
         var editor : SharedPreferences.Editor = shared.edit()
@@ -367,62 +360,56 @@ class SettingsActivity : AppCompatActivity() {
         q.add(stringRequest)
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        when(requestCode) {
-//            REQUEST_IMG_CAPTURE -> {
-//                if(grantResults.isNotEmpty() && grantResults[0] ==
-//                    PackageManager.PERMISSION_GRANTED)
-//                    takePicture()
-//                else
-//                    Toast.makeText(this, "You must grant permission to access the camera.", Toast.LENGTH_LONG).show()
-//            }
-//            REQUEST_GALLERY -> {
-//                if(grantResults.isNotEmpty() && grantResults[0] ==
-//                    PackageManager.PERMISSION_GRANTED)
-//                    openGallery()
-//                else
-//                    Toast.makeText(this, "You must grant permission to access the gallery.", Toast.LENGTH_LONG).show()
-//            }
-//        }
-//    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun upload(img: Bitmap) {
+        val baos: ByteArrayOutputStream = ByteArrayOutputStream()
+//        img.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val imgBytes: ByteArray = baos.toByteArray()
+        val encoded = Base64.getEncoder().encode(imgBytes, Base64.DEFAULT)
+
+        val q = Volley.newRequestQueue(this)
+        val url = "https://scheday.site/nmp/upload_img.php"
+        Log.d("b64", encoded.toString())
+        val stringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            Response.Listener<String> {
+                Log.d("Upload_img", it)
+//                val obj = JSONObject(it)
+//                if(obj.getString("result") == "OK") {
+//                    val editor = shared.edit()
+//                    editor.clear()
+//                    editor.putString("user", it)
+//                    editor.apply()
 //
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (resultCode == Activity.RESULT_OK) {
-//            if (requestCode == REQUEST_IMG_CAPTURE) {
-//                val extras = data!!.extras
-//                val imageBitmap: Bitmap = extras!!.get("data") as Bitmap
-//                val imgProfile: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
-//                imgProfile.setImageBitmap(imageBitmap)
-//            } else if (requestCode == REQUEST_GALLERY) {
-//                val extras = data!!.extras
-//                val imageBitmap: Bitmap = extras!!.get("data") as Bitmap
-//                val imgProfile: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
-//                imgProfile.setImageBitmap(imageBitmap)
-//            }
-//        }
-//    }
+//                    val obj = JSONObject(it)
+//                    val data = obj.getJSONArray("data")
+//                    val userObj = data.getJSONObject(0)
+//                    Global.currentUser.firstname = userObj.getString("firstname")
+//                    Global.currentUser.lastname = userObj.getString("lastname")
+//
+////                    Global.currentUser.firstname = ??
+////                    Toast.makeText(this, "done", Toast.LENGTH_SHORT).show()
+//                } else {
+//                    Toast.makeText(this, obj.getString("message"), Toast.LENGTH_SHORT).show()
+//                }
+                },
+            Response.ErrorListener {
+                Log.d("cekparams", it.message.toString())
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                val params = HashMap<String, String>()
+                params["b64"] = encoded.toString()
+                params["userid"] = Global.currentUser.id.toString()
+                return params
+            }
+        }
+        q.add(stringRequest)
+    }
 
     private fun getDate(s: String): Date {
         val strArr = s.split(" ")
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         return sdf.parse(strArr[0])
-    }
-
-    private fun takePicture() {
-        val i = Intent()
-        i.action = MediaStore.ACTION_IMAGE_CAPTURE
-//        i.type =
-        startActivityForResult(i, REQUEST_IMG_CAPTURE)
-    }
-
-    private fun openGallery() {
-        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(i, REQUEST_IMG_CAPTURE)
     }
 }

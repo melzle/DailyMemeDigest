@@ -133,7 +133,6 @@ class CommentAdapter(val context: Context, val comments: ArrayList<Comment>): Re
                     Log.d("err", obj.getString("message"))
                 }},
             Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
             }
         ) {
             override fun getParams(): MutableMap<String, String> {
@@ -164,7 +163,6 @@ class CommentAdapter(val context: Context, val comments: ArrayList<Comment>): Re
                     Log.d("err", obj.getString("message"))
                 }},
             Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
             }
         ) {
             override fun getParams(): MutableMap<String, String> {
@@ -195,7 +193,6 @@ class CommentAdapter(val context: Context, val comments: ArrayList<Comment>): Re
                     Log.d("err", obj.getString("message"))
                 }},
             Response.ErrorListener {
-//                Log.d("cekparams", it.message.toString())
             }
         ) {
             override fun getParams(): MutableMap<String, String> {
