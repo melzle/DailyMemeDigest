@@ -8,9 +8,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="4dp"
         app:cardBackgroundColor="@color/secondaryColor"
         app:cardCornerRadius="5dp"
@@ -64,7 +63,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 android:background="@null"
-                android:tint="#9F2828"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
