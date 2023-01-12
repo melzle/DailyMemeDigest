@@ -287,11 +287,11 @@ class MainActivity : AppCompatActivity() {
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
-                    Log.d("INI_HOME_BUAT_GLOBAL", it)
+                    Log.d("LOG_MEME_HOME", it)
                 val obj = JSONObject(it)
                 if(obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
-                    Log.d("datalen", data.length().toString())
+//                    Log.d("datalen", data.length().toString())
                     for(i in 0 until data.length()) {
                         val memeObj = data.getJSONObject(i)
                         val meme = Meme(
@@ -303,7 +303,8 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getInt("users_id"),
                             0,
                             memeObj.getInt("commentcount"),
-                            memeObj.getString("date")
+                            memeObj.getString("date"),
+                            memeObj.getInt("isLiked")
                         )
                         Global.homeMemes.add(meme)
                     }
@@ -316,6 +317,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
+                params["userid"] = Global.currentUser.id.toString()
                 return params
             }
         }
@@ -346,7 +348,8 @@ class MainActivity : AppCompatActivity() {
                             memeObj.getInt("users_id"),
                             0,
                             memeObj.getInt("commentcount"),
-                            memeObj.getString("date")
+                            memeObj.getString("date"),
+                            0
                         )
                         Log.d("objparams", memeObj.getString("toptext"))
                         Global.userMemes.add(meme)

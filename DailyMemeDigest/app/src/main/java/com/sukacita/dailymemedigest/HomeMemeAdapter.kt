@@ -71,7 +71,7 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} $dComments"
 
         val date = getDate(homeMemes[position].date).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
-        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
+        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year} | by userid ${homeMemes[position].users_id}"
 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
 
@@ -81,11 +81,18 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
             btnLike.setImageResource(R.drawable.ic_baseline_favorite_grey_24)
             btnLike.isClickable = false
         } else {
-            btnLike.setOnClickListener() {
-                like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+            if (homeMemes[position].isLiked == 0) {
+                btnLike.setOnClickListener() {
+                    like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
+                    btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
+                }
+            } else {
                 btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
             }
         }
+
+//        holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} $dComments"
+
 
 
         val btnComment: AppCompatImageButton = holder.v.findViewById(R.id.btnComment)

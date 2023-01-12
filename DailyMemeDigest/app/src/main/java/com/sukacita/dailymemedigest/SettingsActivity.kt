@@ -1,15 +1,24 @@
 package com.sukacita.dailymemedigest
 
+import android.Manifest
+//import android.Manifest.permission_group.CAMERA
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+//import android.hardware.SensorPrivacyManager.Sensors.CAMERA
+//import android.media.MediaRecorder.VideoSource.CAMERA
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -29,6 +38,8 @@ class SettingsActivity : AppCompatActivity() {
         val UPDATE_USER = "update"
     }
 
+    val REQUEST_IMG_CAPTURE = 2
+    val REQUEST_GALLERY = 3
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +71,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val date = getDate(user.regisDate).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
         txtName.text = "${user.firstname} ${user.lastname}"
-        txtDate.text = "Active since ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
+        txtDate.text = "Active since ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
         txtUsername.text = user.username
 
         var fnHint = "Enter First Name"
@@ -129,6 +140,24 @@ class SettingsActivity : AppCompatActivity() {
 
         fab.setOnClickListener() {
             logout(shared)
+        }
+
+        val fabEditPhoto: FloatingActionButton = findViewById(R.id.fabProfilePic)
+        fabEditPhoto.setOnClickListener() {
+            if(ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.CAMERA), REQUEST_IMG_CAPTURE)
+            } else {
+                takePicture()
+            }
+        }
+
+        val backbtn: ImageButton = findViewById(R.id.backbtn)
+        backbtn.setOnClickListener() {
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 
@@ -206,9 +235,62 @@ class SettingsActivity : AppCompatActivity() {
         q.add(stringRequest)
     }
 
-    fun getDate(s: String): Date {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode) {
+            REQUEST_IMG_CAPTURE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED)
+                    takePicture()
+                else
+                    Toast.makeText(this, "You must grant permission to access the camera.", Toast.LENGTH_LONG).show()
+            }
+            REQUEST_GALLERY -> {
+                if(grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED)
+                    openGallery()
+                else
+                    Toast.makeText(this, "You must grant permission to access the gallery.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_IMG_CAPTURE) {
+                val extras = data!!.extras
+                val imageBitmap: Bitmap = extras!!.get("data") as Bitmap
+                val imgProfile: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
+                imgProfile.setImageBitmap(imageBitmap)
+            } else if (requestCode == REQUEST_GALLERY) {
+                val extras = data!!.extras
+                val imageBitmap: Bitmap = extras!!.get("data") as Bitmap
+                val imgProfile: ImageView = findViewById(R.id.imgProfile_SettingsActivity)
+                imgProfile.setImageBitmap(imageBitmap)
+            }
+        }
+    }
+
+    private fun getDate(s: String): Date {
         val strArr = s.split(" ")
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         return sdf.parse(strArr[0])
+    }
+
+    private fun takePicture() {
+        val i = Intent()
+        i.action = MediaStore.ACTION_IMAGE_CAPTURE
+//        i.type =
+        startActivityForResult(i, REQUEST_IMG_CAPTURE)
+    }
+
+    private fun openGallery() {
+        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(i, REQUEST_IMG_CAPTURE)
     }
 }

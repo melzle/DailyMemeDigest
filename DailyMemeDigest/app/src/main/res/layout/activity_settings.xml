@@ -6,6 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
+    <TextView
+        android:id="@+id/txtHeaderDetail2"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="138dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Settings"
+        app:fontFamily="@font/poppins_semibold"
+        app:layout_constraintStart_toEndOf="@+id/backbtn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/backbtn"
+        android:layout_width="33dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:background="@null"
+        android:contentDescription=""
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_arrow_back_ios_24"
+        tools:ignore="TouchTargetSizeCheck" />
+
     <Button
         android:id="@+id/btnSave_SettingsActivity"
         android:layout_width="0dp"
@@ -23,7 +48,7 @@
         android:id="@+id/cardView"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         app:cardCornerRadius="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,6 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Firstname Lastname"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView" />
@@ -52,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Active since Date"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtName_SettingsActivity" />
@@ -60,6 +87,7 @@
         android:id="@+id/txtUsername_SettingsActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,4 +146,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_logout_16"
         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabProfilePic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="@+id/cardView"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
