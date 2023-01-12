@@ -155,6 +155,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val fabEditPhoto: FloatingActionButton = findViewById(R.id.fabProfilePic)
         fabEditPhoto.setOnClickListener() {
+            // METHOD AMBIL FOTO + UPLOAD
             if(checkAndRequestPermissions(this)){
                 chooseImage(this);
             }
@@ -365,11 +366,11 @@ class SettingsActivity : AppCompatActivity() {
         val baos: ByteArrayOutputStream = ByteArrayOutputStream()
 //        img.compress(Bitmap.CompressFormat.PNG, 100, baos)
         val imgBytes: ByteArray = baos.toByteArray()
-        val encoded = Base64.getEncoder().encode(imgBytes, Base64.DEFAULT)
+//        val encoded = Base64.getEncoder().encode(imgBytes, Base64.DEFAULT)
 
         val q = Volley.newRequestQueue(this)
         val url = "https://scheday.site/nmp/upload_img.php"
-        Log.d("b64", encoded.toString())
+//        Log.d("b64", encoded.toString())
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
             Response.Listener<String> {
@@ -399,7 +400,7 @@ class SettingsActivity : AppCompatActivity() {
         ) {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
-                params["b64"] = encoded.toString()
+//                params["b64"] = encoded.toString()
                 params["userid"] = Global.currentUser.id.toString()
                 return params
             }
@@ -412,4 +413,6 @@ class SettingsActivity : AppCompatActivity() {
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         return sdf.parse(strArr[0])
     }
+
+
 }
