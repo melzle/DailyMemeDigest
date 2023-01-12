@@ -73,7 +73,7 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
         holder.v.findViewById<TextView>(R.id.txtLikes2).text = "${homeMemes[position].comments} $dComments"
 
         val date = getDate(homeMemes[position].date).toInstant().atZone(ZoneId.of("VST")).toLocalDate()
-        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year} | by userid ${homeMemes[position].users_id}"
+        holder.v.findViewById<TextView>(R.id.txtReleaseDate).text = "Posted on ${date.dayOfMonth} ${date.month.toString().lowercase().replaceFirstChar { it.uppercase() }} ${date.year}"
 
         Picasso.get().load(homeMemes[position].imageurl).into(img)
 
@@ -122,11 +122,6 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
 
     override fun getItemCount(): Int {
         return homeMemes.size
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-//        recyclerView.findview
     }
 
     private fun like(memeId: Int, userId: Int, txtLikes: TextView, position: Int) {

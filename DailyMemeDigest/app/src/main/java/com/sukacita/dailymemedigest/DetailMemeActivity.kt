@@ -102,6 +102,7 @@ class DetailMemeActivity : AppCompatActivity() {
             Request.Method.POST, url,
             Response.Listener<String> {
                 val obj = JSONObject(it)
+                Log.d("COMMENTS", it)
                 if(obj.getString("result") == "OK") {
                     val data = obj.getJSONArray("data")
                     for(i in 0 until data.length()) {
@@ -113,7 +114,9 @@ class DetailMemeActivity : AppCompatActivity() {
                             commentObj.getInt("users_id"),
                             commentObj.getString("content"),
                             commentObj.getString("date"),
-                            commentObj.getInt("numlikes")
+                            commentObj.getInt("numlikes"),
+                            commentObj.getInt("privacysetting"),
+                            commentObj.getInt("isLiked")
                         )
                         Global.comments.add(comment)
                     }
@@ -125,6 +128,7 @@ class DetailMemeActivity : AppCompatActivity() {
             override fun getParams(): MutableMap<String, String> {
                 val params = HashMap<String, String>()
                 params["memesid"] = idmeme.toString()
+                params["userid"] = Global.currentUser.id.toString()
                 return params
             }
         }

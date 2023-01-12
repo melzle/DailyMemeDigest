@@ -35,6 +35,7 @@ import org.json.JSONObject
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_UPDATE = 1
@@ -130,11 +131,11 @@ class MainActivity : AppCompatActivity() {
         txtNameHeader.text = "${user.firstname} ${user.lastname}"
         txtUsername.text = user.username
 
+//        val random = Random.nextInt(0, 9)
         val bgUrl = "https://media.timeout.com/images/105659619/750/422/image.jpg"
-
+//        val bgUrl = Global.homeMemes[random].imageurl
         Glide.with(this).load(bgUrl).apply(
             RequestOptions.bitmapTransform(BlurTransformation(15, 2))).into(imgBg)
-        Toast.makeText(this, "avatarurl ${user.avatarUrl}", Toast.LENGTH_SHORT).show()
 
         if (user.avatarUrl != "") {
             Glide.with(this).load(user.avatarUrl).into(imgProfilePic)
@@ -260,6 +261,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         q.add(stringRequest)
+
+
     }
 
     private fun updateUser() {
@@ -269,7 +272,7 @@ class MainActivity : AppCompatActivity() {
         user = getUser(userStr.toString())
     }
 
-    private fun updateHeader() {
+    fun updateHeader() {
         val txtNameHeader: TextView = header!!.findViewById(R.id.txtName_drawerHeader)
         txtNameHeader.text = "${user.firstname} ${user.lastname}"
         finish()
@@ -277,7 +280,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(0, 0)
     }
-
 
     private fun getHomeMemes() {
         Global.homeMemes.clear()
