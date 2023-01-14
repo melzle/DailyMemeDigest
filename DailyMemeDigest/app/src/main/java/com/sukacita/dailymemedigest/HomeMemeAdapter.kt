@@ -78,12 +78,15 @@ class HomeMemeAdapter(val context: Context, val homeMemes: ArrayList<Meme>, val 
             }
 
             btnLike.setOnClickListener() {
+                // belum di liked
                 if (homeMemes[position].isLiked == 0) {
+                    // klo belum di like, panggil method like
                     like(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
                     btnLike.setImageResource(R.drawable.ic_baseline_favorite_24)
                     homeMemes[position].isLiked = 1
                     holder.v.findViewById<TextView>(R.id.txtLikes).text = "${ homeMemes[position].numoflikes } $dLikes"
                 } else {
+                    // udah di like, panggil method unlike
                     unLike(homeMemes[position].id, idUser, holder.v.findViewById(R.id.txtLikes), position)
                     btnLike.setImageResource(R.drawable.ic_baseline_favorite_border_24)
                     homeMemes[position].isLiked = 0

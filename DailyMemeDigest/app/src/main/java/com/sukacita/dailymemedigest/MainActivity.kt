@@ -56,9 +56,11 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        // top bar
         supportActionBar?.title = "Daily Meme Digest"
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false) // muncul burger icon
 
+        // buat drawer sama biar bisa respond ke open/close drawernya
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         var drawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.app_name,
@@ -66,25 +68,38 @@ class MainActivity : AppCompatActivity() {
         drawerToggle.isDrawerIndicatorEnabled = true
         drawerToggle.syncState()
 
+        // ngambil json user yg di sharedpreferences, kalo ada
         val sharedFile = "com.sukacita.dailymemedigest"
         var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
         val userStr = shared.getString("user", null)
+        // kalo user ga ada, buka loginactivity, mainactivity di tutup.
         if (userStr == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
+        // ambil komponen2
         val viewPager: ViewPager2 = findViewById(R.id.viewPager)
         val bottomNav: BottomNavigationView = findViewById(R.id.bottomNav)
         val navView: NavigationView = findViewById(R.id.navView)
+
         header = navView.getHeaderView(0)
+
+        // convert string json jadi object user
         user = getUser(userStr.toString())
+
+        // buat refresh sharedpref (memastikan data spref sama yg ada di database)
         updateUserSpref(user.username)
+
+        // karena method diatas manggil webservice, jalan di thread sendiri, ada kemungkinan data belom sampek,
+        // maka thread main di stop dulu buat nunggu data biar sampek. kalok data belom sampek, nanti keluar putih.
         Thread.sleep(500)
         updateUser()
+        // user terbaru di set ke global, biar datanya bisa dipake sama activity/fragment/adapter lain.
         Global.currentUser = user
 
+        // ngambil meme2 dan leaderboard dari db
         getHomeMemes()
         getUserMemes(user.id)
         getLeaderboard()
@@ -93,9 +108,11 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = MyViewPagerAdapter(this, fragments)
         viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
+                // item bottomnav diganti ngikut posisi viewpager
                 bottomNav.selectedItemId = bottomNav.menu[position].itemId
             }
         })
+
 
         bottomNav.setOnItemSelectedListener {
             updateMenuSelected(when(it.itemId) {
@@ -162,6 +179,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // buat refresh habis komen
     override fun onActivityReenter(resultCode: Int, data: Intent?) {
         super.onActivityReenter(resultCode, data)
         finish()
@@ -170,6 +188,7 @@ class MainActivity : AppCompatActivity() {
         overridePendingTransition(0, 0)
     }
 
+    // update menu yg di select (di header, bottomnav, viewpager)
     private fun updateMenuSelected(id: Int, viewPager: ViewPager2, navView: NavigationView) {
         viewPager.currentItem = id
         navView.menu.getItem(id).isChecked = true

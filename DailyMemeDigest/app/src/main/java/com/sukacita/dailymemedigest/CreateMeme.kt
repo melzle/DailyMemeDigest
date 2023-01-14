@@ -25,7 +25,7 @@ class CreateMeme : AppCompatActivity() {
         val sharedFile = "com.sukacita.dailymemedigest"
         var shared : SharedPreferences = getSharedPreferences(sharedFile, Context.MODE_PRIVATE)
         val userStr = shared.getString("user", null)
-        val user = getUser(userStr.toString())
+        val user: User = getUser(userStr.toString())
 
         val urlImg = findViewById<ImageView>(R.id.imgMeme_Create)
         val toptext = findViewById<TextView>(R.id.txtTopFill)
@@ -66,7 +66,8 @@ class CreateMeme : AppCompatActivity() {
             ) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = HashMap<String, String>()
-                    params["userid"] = user.id.toString()
+                    params["userid"] = user.id.toString() // yg dipakek kmrn (ambil data dari spref)
+//                    params["userid"] = Global.currentUser.id.toString()
                     params["imageurl"] = txtUrl.text.toString()
                     params["toptext"] = txtTop.text.toString()
                     params["bottomtext"] = txtBottom.text.toString()
@@ -77,6 +78,7 @@ class CreateMeme : AppCompatActivity() {
         }
     }
 
+    // konversi json string jadi object user
     private fun getUser(userStr: String): User {
         val obj = JSONObject(userStr)
         val data = obj.getJSONArray("data")
